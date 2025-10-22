@@ -1,3 +1,4 @@
+//ops controller
 package backend.ops.controller;
 
 
@@ -23,7 +24,7 @@ public class OpsController {
 
     @GetMapping("/sync")
     public ResponseEntity<String> fetchFiles() throws Exception {
-        return ResponseEntity.ok(ftpService.fetchAllFiles());
+        return ResponseEntity.ok(ftpService.fetchAllFiles().toString());
     }
 
     @GetMapping("/files")
@@ -36,3 +37,4 @@ public class OpsController {
         return ResponseEntity.ok(fileService.updateCategory(id, category));
     }
 }
+

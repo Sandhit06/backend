@@ -1,3 +1,4 @@
+//sync job
 package backend.ops.model;
 
 import jakarta.persistence.*;
