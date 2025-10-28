@@ -1,66 +1,79 @@
-//stored file
-//package backend.ops.model;
-//
-//import jakarta.persistence.*;
-//import java.time.LocalDateTime;
-//
-//@Entity
-//public class StoredFile {
-//    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-//    private Long id;
-//    private String fileName;
-//    private String category;
-//    private String source;
-//    private Long size;
-//    private LocalDateTime uploadedAt;
-//    private String status;    // pending, validated, published
-//    private String localPath;
-//    // getters/setters
-//}
-//
-// src/main/java/backend/ops/model/StoredFile.java
 package backend.ops.model;
 
 import jakarta.persistence.*;
-import java.time.LocalDateTime;
+import java.time.Instant;
 
 @Entity
-@Table(name = "stored_file")
+@Table(name = "stored_files")
 public class StoredFile {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
+    @Column(name = "drive_item_id", nullable = false)
+    private String driveItemId;
+
+    @Column(name = "file_name", nullable = false)
     private String fileName;
 
-    private String category;          // e.g., Compliance / Credit Risk / General
-    private String source;            // e.g., remoteDir path or storage name
-    private Long size;                // bytes
-    private LocalDateTime uploadedAt; // when we ingested the file
-    private String status;            // pending / validated / published
-    private String localPath;         // absolute/relative path on RW storage
+    @Column(name = "domain_prefix", nullable = false)
+    private String domainPrefix;
 
-    public StoredFile() {} // JPA needs a no-args constructor
+    @Column(name = "source_path", nullable = false)
+    private String sourcePath; // e.g. incoming/Finance__abc.pdf
 
-    // ----- getters -----
+    @Column(name = "output_path")
+    private String outputPath; // e.g. reports/compliance/Finance/Finance__abc.pdf
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private FileStatus status = FileStatus.IMPORTED;
+
+    @Column(name = "size_bytes")
+    private Long sizeBytes;
+
+    @Column(name = "content_type")
+    private String contentType = "application/pdf";
+
+    @Column(name = "created_at", nullable = false)
+    private Instant createdAt;
+
+    @Column(name = "updated_at", nullable = false)
+    private Instant updatedAt;
+
+    @PrePersist
+    public void onCreate() {
+        Instant now = Instant.now();
+        createdAt = now;
+        updatedAt = now;
+    }
+
+    @PreUpdate
+    public void onUpdate() {
+        updatedAt = Instant.now();
+    }
+
+    // getters and setters
     public Long getId() { return id; }
-    public String getFileName() { return fileName; }
-    public String getCategory() { return category; }
-    public String getSource() { return source; }
-    public Long getSize() { return size; }
-    public LocalDateTime getUploadedAt() { return uploadedAt; }
-    public String getStatus() { return status; }
-    public String getLocalPath() { return localPath; }
-
-    // ----- setters -----
     public void setId(Long id) { this.id = id; }
+    public String getDriveItemId() { return driveItemId; }
+    public void setDriveItemId(String driveItemId) { this.driveItemId = driveItemId; }
+    public String getFileName() { return fileName; }
     public void setFileName(String fileName) { this.fileName = fileName; }
-    public void setCategory(String category) { this.category = category; }
-    public void setSource(String source) { this.source = source; }
-    public void setSize(Long size) { this.size = size; }
-    public void setUploadedAt(LocalDateTime uploadedAt) { this.uploadedAt = uploadedAt; }
-    public void setStatus(String status) { this.status = status; }
-    public void setLocalPath(String localPath) { this.localPath = localPath; }
+    public String getDomainPrefix() { return domainPrefix; }
+    public void setDomainPrefix(String domainPrefix) { this.domainPrefix = domainPrefix; }
+    public String getSourcePath() { return sourcePath; }
+    public void setSourcePath(String sourcePath) { this.sourcePath = sourcePath; }
+    public String getOutputPath() { return outputPath; }
+    public void setOutputPath(String outputPath) { this.outputPath = outputPath; }
+    public FileStatus getStatus() { return status; }
+    public void setStatus(FileStatus status) { this.status = status; }
+    public Long getSizeBytes() { return sizeBytes; }
+    public void setSizeBytes(Long sizeBytes) { this.sizeBytes = sizeBytes; }
+    public String getContentType() { return contentType; }
+    public void setContentType(String contentType) { this.contentType = contentType; }
+    public Instant getCreatedAt() { return createdAt; }
+    public void setCreatedAt(Instant createdAt) { this.createdAt = createdAt; }
+    public Instant getUpdatedAt() { return updatedAt; }
+    public void setUpdatedAt(Instant updatedAt) { this.updatedAt = updatedAt; }
 }
